@@ -18,6 +18,28 @@ const GetAllBooks = async (req, res) => {
     }
 
 }
+// See single book
+const SingleBook = async (req, res) => {
+    const { Bid } = req.body;
+
+    try {
+        const findBook = await Book.findOne({ Bid })
+        if (!findBook) {
+            return res.status(404).json({ message: 'The Book not find !' });
+        }
+        const { Bname, ISBN } = findBook
+
+        return res.status(200).json({
+            BookName: Bname,
+            BookISBN: ISBN
+        })
+
+    } catch (error) {
+        return res.status(500).json({ message: error.message })
+    }
+
+}
+
 
 //Add singel Book
 const AddBook = async (req, res) => {
@@ -77,4 +99,4 @@ const DeleteBook = async (req, res) => {
 
 }
 
-module.exports = { GetAllBooks, AddBook, UpdateBook, DeleteBook }
+module.exports = { GetAllBooks, AddBook, UpdateBook, DeleteBook, SingleBook }
