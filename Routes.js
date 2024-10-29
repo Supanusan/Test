@@ -3,11 +3,15 @@ const Book = require('./modules/BookModule')
 //To see All Books
 const GetAllBooks = async (req, res) => {
     try {
-        const AllBooks = await Book.find()
+        const AllBooks = await Book.find({})
+        const count = AllBooks.length;
         if (!AllBooks) {
             return res.status(400).json({ message: 'NO books Found !' })
         }
-        res.status(200).json({ data: AllBooks })
+        res.status(200).json({
+            Total: count,
+            data: AllBooks
+        })
     } catch (error) {
         console.log(error.message)
         res.status(500).json({ message: 'Error' })
@@ -36,13 +40,12 @@ const AddBook = async (req, res) => {
 
 // Update a book
 const UpdateBook = async (req, res) => {
-    const { Bid } = req.params;
-    const { Bname, ISBN } = req.body;
+    const { Bid, Bname, ISBN } = req.body;
     try {
         if (!Bname || !ISBN) {
             return res.status(400).json({ message: 'please Check each feilds' })
         }
-        const findBook = await Book.findByIdAndUpdate(Bid, req.body);
+        const findBook = await Book.findOneAndUpdate({ Bid }, { Bname, ISBN });
         if (!findBook) {
             return res.status(404).json({ message: 'This book not found !' })
         }
@@ -56,14 +59,14 @@ const UpdateBook = async (req, res) => {
 
 //Delete a book
 const DeleteBook = async (req, res) => {
-    const { Bid } = req.params;
+    const { Bid } = req.body;
     if (!Bid) {
         return res.status(400).json({ message: 'please insert the bookid' })
     }
 
 
     try {
-        const DelBook = await Book.findByIdAndDelete(Bid);
+        const DelBook = await Book.findOneAndDelete({ Bid });
         if (!DelBook) {
             return res.status(500).json({ message: 'Unable to delete !' })
         }
